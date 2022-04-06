@@ -44,6 +44,8 @@ class cannon(Character):
 
         self.rangeimage = os.path.join("images\Cannon","riflerangerect.png")
         self.verimage= os.path.join("images\Cannon","uprange.png")
+        self.radarimage = os.path.join("images","radar.png")
+
 
        ####Sensing the direction
       
@@ -54,6 +56,7 @@ class cannon(Character):
         self.rangeleft = panel(self.rangeimage,self.rangeimage,0,0)
         self.collisionim =os.path.join("images\Rifleman","riflecollisionrect.png")
         self.collideim = panel(self.collisionim,self.collisionim,0,0)
+        self.radar= drawable(self.radarimage,0,0)
 
         self.rangelst = [self.rangeup,self.rangedown,self.rangeright,self.rangeleft]
 
@@ -101,6 +104,51 @@ class cannon(Character):
       start = list(self.position)
       if Distance(start,self.end)-self.tolerance > 36 and self.shooting != True:
          self.going = True  
+      
+      
+ 
+
+      spotted= False
+      if self.shooting!= True and self.going !=True:
+         distancedict = {}
+
+         sortedenemy = []
+         for enemy in enemylst:
+            if enemy.getCollisionRect().colliderect(self.radar.getCollisionRect()):
+               distance = Distance(list(enemy.getPosition()),list(self.getPosition()))
+               spotted = True
+               distancedict[distance]=enemy
+               sortedenemy.append(distance)
+
+         if spotted:
+            sortedenemy.sort()
+            
+
+
+            target = distancedict[sortedenemy[0]]
+
+            xdiff = self.getPosition().x -target.getPosition().x
+            ydiff = self.getPosition().y -target.getPosition().y
+
+            if xdiff < ydiff:
+               self.end[0]= target.getPosition().x
+
+            else:
+               self.end[1]= target.getPosition().y
+
+
+
+            
+
+         
+
+         
+
+
+
+
+
+
 
       if self.shooting:
             sortedenemy.sort()
@@ -186,9 +234,17 @@ class cannon(Character):
       self.end = end
    
 
+
+    def getCollisionRect(self):
+       oldrect = self.image.get_rect()
+       oldrect.inflate(-10,-10)
+       newrect =  self.position + oldrect
+       return newrect
     def updaterange(self):
       cpointy = self.position.y +self.centery*self.getHeight()  
       cpointx = self.position.x +self.centerx*self.getWidth() 
+
+      
 
       self.rangeup.position.x = cpointx-6
       self.rangeup.position.y = cpointy-300
@@ -208,6 +264,7 @@ class cannon(Character):
 
         self.updatecollide()
         self.updaterange()
+        self.radar.draw(surface)
         #self.rangeup.draw(surface)
         #pygame.draw.rect(surface,(0,0,255),self.getCollisionRect())
 
@@ -218,8 +275,8 @@ class cannon(Character):
            #print("this is x, " , str(item.position.x))
         #"Length of range " + str(len(self.rangelst)))
 
-        for item in self.sensorls:
-           item.draw(surface)
+        #for item in self.sensorls:
+           #item.draw(surface)
         if [self.dead,self.shooting,self.going] == [False,False,False]:
       #its in a nothing state here, doing nothing
          
@@ -316,6 +373,10 @@ class cannon(Character):
     def updaterange(self):
       cpointy = self.position.y +self.centery*self.getHeight()  
       cpointx = self.position.x +self.centerx*self.getWidth() 
+
+
+      self.radar.position.x = cpointx -self.radar.getWidth()*0.5
+      self.radar.position.y = cpointy - self.radar.getHeight()*0.5
 
       self.rangeup.position.x = cpointx-6
       self.rangeup.position.y = cpointy-300

@@ -11,6 +11,9 @@ from Panel import panel
 
 
 from character import Character
+
+from drawable import drawable
+
 class Rifleman(Character):
 
     def __init__(self,path,xposition,yposition,color="Green"):
@@ -67,8 +70,11 @@ class Rifleman(Character):
        self.rangeright = panel(self.rangeimage,self.rangeimage,0,0)
        self.rangeleft = panel(self.rangeimage,self.rangeimage,0,0)
 
-       self.rangelst = [self.rangeup,self.rangedown,self.rangeright,self.rangeleft]
+       
 
+       self.rangelst = [self.rangeup,self.rangedown,self.rangeright,self.rangeleft]
+       self.radarimage = os.path.join("images","radar.png")
+       self.radar= drawable(self.radarimage,0,0)
 
 
 
@@ -158,6 +164,9 @@ class Rifleman(Character):
       cpointy = self.position.y +self.centery*self.getHeight()  
       cpointx = self.position.x +self.centerx*self.getWidth() 
 
+      self.radar.position.x = cpointx -self.radar.getWidth()*0.5
+      self.radar.position.y = cpointy - self.radar.getHeight()*0.5
+
       self.rangeup.position.x = cpointx-6
       self.rangeup.position.y = cpointy-300
 
@@ -215,6 +224,34 @@ class Rifleman(Character):
       start = list(self.position)
       if Distance(start,self.end)-self.tolerance > 36 and self.shooting != True:
          self.going = True
+
+      spotted = False
+      if self.shooting!= True and self.going !=True:
+         distancedict = {}
+
+         sortedenemy = []
+         for enemy in enemylst:
+            if enemy.getCollisionRect().colliderect(self.radar.getCollisionRect()):
+               distance = Distance(list(enemy.getPosition()),list(self.getPosition()))
+               spotted = True
+               distancedict[distance]=enemy
+               sortedenemy.append(distance)
+
+         if spotted:
+            sortedenemy.sort()
+            
+
+
+            target = distancedict[sortedenemy[0]]
+
+            xdiff = self.getPosition().x -target.getPosition().x
+            ydiff = self.getPosition().y -target.getPosition().y
+
+            if xdiff < ydiff:
+               self.end[0]= target.getPosition().x
+
+            else:
+               self.end[1]= target.getPosition().y
 
       if self.shooting:
             sortedenemy.sort()

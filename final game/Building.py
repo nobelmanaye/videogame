@@ -91,10 +91,10 @@ class building(object):
           return False
        
 
-   def recvdamage(self,damage):
-      self.HP -= damage
-      if self.HP <= 0:
-         self.dead = True
+   def recvDamage(self,damage):
+        self.HP -= damage
+        if self.HP <= 0:
+           self.dead = True
    def update(self):
        self.path = os.path.join(self.pathdir,self.pathname +str(self.progress)+ ".png")
        self.image = pygame.image.load(self.path)

@@ -10,7 +10,7 @@ from vector2D import Vector2
 from physics import Distance,rad
 from drawable import drawable
 from Panel import panel
-SCREEN_SIZE = Vector2(800, 800)
+SCREEN_SIZE = Vector2(1440, 900)
 WORLD_SIZE = Vector2(1200, 1000)
 
 class Character(drawable):

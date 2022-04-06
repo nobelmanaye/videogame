@@ -85,6 +85,9 @@ def main():
    barrackbuttonpath =os.path.join("images\Buttons", "barracksbutton.png")
    towerbuttonpath = os.path.join("images\Buttons", "barracksbutton.png")
    riflemanbuttonpath = os.path.join("images\Buttons", "riflemanbutton.png")
+   cannonbuttonpath = os.path.join("images\Buttons", "riflemanbutton.png")
+   cavalrybuttonpath = os.path.join("images\Buttons", "riflemanbutton.png")
+   pikemanbuttonpath = os.path.join("images\Buttons", "riflemanbutton.png")
    
 
    # ENEMIES
@@ -194,6 +197,9 @@ def main():
    mode4 = Mode("tutorial")
    mode5 = Mode("quit")
 
+
+
+
    conditionlst = [mode1,mode2,mode3,mode4,mode5]
    quill = drawable(quillpath,0,0)
    
@@ -202,6 +208,10 @@ def main():
    towerbutton =  panel(towerbuttonpath,towerbuttonpath,90,770)
    
    riflemanbutton = panel(riflemanbuttonpath,riflemanbuttonpath,0,770)
+   cannonbutton = panel(riflemanbuttonpath,riflemanbuttonpath,0,770)
+   cavalrybutton = panel(riflemanbuttonpath,riflemanbuttonpath,0,770)
+   pikemanbutton = panel(riflemanbuttonpath,riflemanbuttonpath,0,770)
+   
 
    touched = False
 
@@ -276,7 +286,7 @@ def main():
                   if buttons.getCollisionRect().collidepoint(mousepos[0],mousepos[1]):
                      Menu = False
                      mode = conditionlst[buttonlst.index(buttons)].getMode()
-                     print("This is mode " + mode)
+                     
       pygame.display.flip()
 
 
@@ -287,11 +297,26 @@ def main():
 
 
    RUNNING = True
-   while RUNNING:
+   win = False
+   lose = False
+   if mode =="tutorial":
+      finished = False
+
+   wintime = 60*(1)
+
+
+   gamestart = int(pygame.time.get_ticks()/1000)
+   
+   while RUNNING and mode != "quit":
 
         
         
         time = int(pygame.time.get_ticks()/1000)
+
+        if abs((time-gamestart))>wintime:
+           win = True
+           RUNNING = False
+           
 
         
         if finished:
@@ -351,7 +376,7 @@ def main():
             
               riflesold = Rifleman(riflepath,randposx,randposy)
               riflesold.quickshootfix("Red")
-              riflesold.beginmoving((homepos[0] + 50, homepos[1]+50))
+              riflesold.beginmoving((340, 523))
 
               enemylst.append(riflesold)
           
@@ -397,10 +422,13 @@ def main():
 
         if home.isDead():
            RUNNING = False
+           lose = True
         if len(enemylst) > 0:
          for enemy in enemylst:
             
-            enemy.shoot(pygame.time,projectilelst,allymilitary,time)
+            fullenemies = [item for item in allymilitary]
+            fullenemies.append(home)
+            enemy.shoot(pygame.time,projectilelst,fullenemies,time)
             enemy.go(gameClock,buildinglst)
             enemy.walk(pygame.time)
             
@@ -541,7 +569,7 @@ def main():
                  
               
               if event.type == pygame.KEYUP:
-                 #rint("============ This is Pos" + str(pygame.mouse.get_pos()))
+                 print("============ This is Pos" + str(pygame.mouse.get_pos()))
                  for riflesold in allymilitary:
                     riflesold.shooting = False
                #   rowlst  = []
@@ -820,6 +848,20 @@ def main():
 
         gameClock.tick(60)
         ticks = gameClock.get_time() / 1000
+   
+   if win == True:
+      print("You Won!!")
+      main()
+
+
+
+   elif lose == True:
+      print("You LOST!!")
+
+      
+
+
+
 
       
       

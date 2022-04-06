@@ -8,6 +8,7 @@ from vector2D import Vector2
 from physics import Distance,rad
 from projectile import Projectile
 from Panel import panel
+from drawable import drawable
 from character import Character
 
 
@@ -37,6 +38,9 @@ class cavalry(Character):
         self.walkimage = self.image
 
        ####Sensing the direction
+
+        self.sword1 = pygame.mixer.Sound(os.path.join("sound","Sword1.wav"))
+        self.sword2 = pygame.mixer.Sound(os.path.join("sound","Sword2.wav"))
       
 
         self.rangeup = panel(self.verimage,self.verimage,0,0)
@@ -46,6 +50,8 @@ class cavalry(Character):
 
         self.rangelst = [self.rangeup,self.rangedown,self.rangeright,self.rangeleft]
 
+        self.radarimage = os.path.join("images","radar.png")
+        self.radar= drawable(self.radarimage,0,0)
 
     def goshoot(self,target =None):
        self.target = target
@@ -84,7 +90,40 @@ class cavalry(Character):
                distancedict[distance]=enemy
                sortedenemy.append(distance)
         
-         
+      start = list(self.position)
+      
+      if Distance(start,self.end)-self.tolerance > 36 and self.shooting != True:
+         self.going = True
+      spotted= False
+
+      if self.shooting!= True and self.going !=True:
+         distancedict = {}
+
+         sortedenemy = []
+         for enemy in enemylst:
+            if enemy.getCollisionRect().colliderect(self.radar.getCollisionRect()):
+               distance = Distance(list(enemy.getPosition()),list(self.getPosition()))
+               spotted = True
+               distancedict[distance]=enemy
+               sortedenemy.append(distance)
+
+         if spotted:
+            sortedenemy.sort()
+            
+
+
+            target = distancedict[sortedenemy[0]]
+
+            xdiff = self.getPosition().x -target.getPosition().x
+            ydiff = self.getPosition().y -target.getPosition().y
+
+            
+            self.end[0]= target.getPosition().x-self.getWidth()
+
+            
+            self.end[1]= target.getPosition().y-0.8*self.getHeight()
+
+
 
       if self.shooting:
             sortedenemy.sort()
@@ -137,6 +176,22 @@ class cavalry(Character):
                   
                   target.recvDamage(self.attack)
 
+            if self.shootcursor == 3*frame:
+                  channel = pygame.mixer.find_channel()
+                  print("AM I empty"  + str(channel ==None))
+
+                  
+                  
+                  if channel is not None:
+                        print(" THis is busy " + str(channel.get_busy()))
+                        channel.set_volume(0.5)
+                        choice = random.randint(0,1)
+                        if choice:
+                            channel.play(self.sword1)
+                        else:
+                            channel.play(self.sword2)
+                  target.recvDamage(self.attack)
+
                
                # if self.cursor in(5*frame,frame):
                   
@@ -148,6 +203,7 @@ class cavalry(Character):
          #If its not in a going state change the image to the defualt reserve image
          
          self.image = self.imageres
+
 
     def updatecollide(self):
       cpointy = self.position.y +self.centery*self.getHeight()+19
@@ -322,6 +378,34 @@ class cavalry(Character):
                distancedict[distance]=enemy
                sortedenemy.append(distance)
         
+      start = list(self.position)
+      if Distance(start,self.end)-self.tolerance > 36 and self.shooting != True:
+         self.going = True
+      spotted= False
+
+      if self.shooting!= True and self.going !=True:
+         distancedict = {}
+
+         sortedenemy = []
+         for enemy in enemylst:
+            if enemy.getCollisionRect().colliderect(self.radar.getCollisionRect()):
+               distance = Distance(list(enemy.getPosition()),list(self.getPosition()))
+               spotted = True
+               distancedict[distance]=enemy
+               sortedenemy.append(distance)
+
+         if spotted:
+            sortedenemy.sort()
+            target = distancedict[sortedenemy[0]]
+
+            xdiff = self.getPosition().x- target.getPosition().x
+            ydiff = self.getPosition().y -target.getPosition().y
+
+            
+
+            
+            self.end[1]= target.getPosition().y -0.5*self.getHeight()
+            self.end[0] = target.getPosition().x - 0.5*self.getWidth()
          
 
       if self.shooting:
@@ -389,7 +473,10 @@ class cavalry(Character):
 
     def updaterange(self):
       cpointy = self.position.y +self.centery*self.getHeight()  
-      cpointx = self.position.x +self.centerx*self.getWidth() 
+      cpointx = self.position.x +self.centerx*self.getWidth()
+
+      self.radar.position.x = cpointx -self.radar.getWidth()*0.5
+      self.radar.position.y = cpointy - self.radar.getHeight()*0.5 
 
       self.rangeup.position.x = cpointx-30
 
