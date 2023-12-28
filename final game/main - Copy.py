@@ -3,7 +3,6 @@
 
 import pygame
 import os
-import random
 from vector2D import Vector2
 from citizen import citizen
 from resource import resource
@@ -18,6 +17,7 @@ from testgraph import astar, graphmap
 from rifleman import Rifleman
 from Cavalry import cavalry
 from dummy import Dummy
+import secrets
 
 SCREEN_SIZE = (1200,950)
 
@@ -211,17 +211,17 @@ def main():
            
         if (time)%50 ==0 and time != 0 and time != oldtime:
            oldtime = time
-           randposx = random.randint(50,80)
-           randposy = random.randint(50,80)
+           randposx = secrets.SystemRandom().randint(50,80)
+           randposy = secrets.SystemRandom().randint(50,80)
 
-           numenemies = random.randint(1,3)
+           numenemies = secrets.SystemRandom().randint(1,3)
            played = False
            
            
 
            for i in range (numenemies):
-              randposx = random.randint(-10,80)
-              randposy = random.randint(-30,50)
+              randposx = secrets.SystemRandom().randint(-10,80)
+              randposy = secrets.SystemRandom().randint(-30,50)
 
               newDummy = Dummy(dummypath,randposx,randposy)
               newDummy.beginmoving((homepos[0] + 50, homepos[1]+50))
@@ -374,7 +374,7 @@ def main():
         
         for event in pygame.event.get():
           
-              rand = random.randint(0,1)
+              rand = secrets.SystemRandom().randint(0,1)
 
               if event.type == pygame.KEYDOWN:
                   #tutorial = pygame.image.load(os.path.join("images", "axe1.png")).convert()
@@ -431,8 +431,8 @@ def main():
                               #screen.blit(Noresourcetxt,(800,60))
                            else:
                            
-                              randomx = random.randint(-200,-40)
-                              randomy= random.randint(-200,-40)
+                              randomx = secrets.SystemRandom().randint(-200,-40)
+                              randomy= secrets.SystemRandom().randint(-200,-40)
 
                               leftclicklst.append(tuple((home.getPosition().x+randomx-leftclick.getWidth()+80,home.getPosition().x+randomy-leftclick.getHeight())))
                               leftindex +=1
@@ -468,8 +468,8 @@ def main():
                               
                                  riflesoldier.quickshootfix()
                                  register.addGold(-1*costregister["rifleman"][1])
-                                 randomx = random.randint(-80,-40)
-                                 randomy= random.randint(-100,-40)
+                                 randomx = secrets.SystemRandom().randint(-80,-40)
+                                 randomy= secrets.SystemRandom().randint(-100,-40)
                                  riflesoldier.beginmoving([randomx+buildings.getPosition().x,randomy + buildings.getPosition().y])
                                  allymilitary.append(riflesoldier)
                                  allymilitary.append(cav)
